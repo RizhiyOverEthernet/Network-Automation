@@ -3,13 +3,13 @@ set host [lindex $argv 0]
 set port [lindex $argv 1]
 if {[string match "*gpon*" $host]} {
 set currentlogin "huawei"
-set currentpass "pass0007"
+set currentpass "pass"
 } elseif {[string match "*gepon*" $host]} {
 set currentlogin "admin"
 set currentpass "password"
 } else {
-set currentlogin "rizhiy"
-set currentpass "Fary1313666."
+set currentlogin "taclogin"
+set currentpass "tacpass"
 }
 if {$port == ""} {
 spawn telnet $host
