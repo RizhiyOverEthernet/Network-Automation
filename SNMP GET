@@ -1,0 +1,18 @@
+# Данная функция реализует подключение по SNMP к узлу сети и выполняет SNMP-GET по указанному OID
+# В качестве аргумента передаётся адрес хоста (IP или domain), сам OID и слово чтения/записи для SNMP
+
+from pysnmp.hlapi import *  # Та самая библиотека для SNMP
+
+
+def get(host, oid, secretWord):  # Объявление функции SNMP-GET
+    errorIndication, errorStatus, errorIndex, varBinds = next(  # Объявление переменных для функции
+        getCmd(SnmpEngine(),  # Обращение к SNMP engine
+               CommunityData(secretWord),  # Указываем секретное слово
+               UdpTransportTarget((host, 161)),  # Указываем хост и порт
+               ContextData(),  # Локальное хранилище данных функций SNMP
+               ObjectType(ObjectIdentity(oid)))  # Указываем OID
+    )  # Закрытие функции
+
+    for varBind in varBinds:  # Цикл вывода
+        SN = ' = '.join([x.prettyPrint() for x in varBind])  # тут делаем вывод и объединение строк
+        print(SN)  # Выводим результат
