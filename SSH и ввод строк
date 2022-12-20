@@ -1,0 +1,42 @@
+# Данный скрипт позволяет произвести SSH соединение по указанному узлу, по параметрам логина, пароля, порта и самого адреса
+# Также он позволяет вводить строки на узле, а затем выводит всю CLI в консоль
+
+import paramiko
+import socket
+from pprint import pprint
+
+
+def send_show_command(max_bytes=60000):  # Объявление функции и максимальный размер сообщения
+
+    cl = paramiko.SSHClient()  # Вызываем класс, отвечающий за установку SSH соединения
+    cl.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Снимаем предупреждение о SSH ключе
+    cl.connect(  # Вводим данные для установки SSH соединения
+        hostname='hostname',  # Указываем адрес хоста
+        username='login',  # Логин для входа
+        password='password',  # Пароль для входа
+        port=1313,  # Порт соединения
+        look_for_keys=False,  # Отключаем просмотр ключей
+        allow_agent=False,  # Отключаем агента SSH (Менеджера ключей)
+    )
+    with cl.invoke_shell() as ssh:  # объявляем функцию под сокращение "SSH"
+        ssh.send("tn sher18-gpon1\n")  # Главная часть скрипта. В скобках строки, которые будут вводиться
+        ssh.send("display ont autofind all\n")  # Показание того, что может быть 2 строки ввода
+        ssh.send("\n")  # После строк желательно ставить \n. Делает пробел
+        results = {}  # Так как Windows не может в Expect, то следующий цикл создаёт искусственное ожидание
+        commands = [""]  # Объявляем пустой массив
+        for command in commands:  # Объявление цикла ввода команд
+            ssh.send(f"{command}\n")  # Отправляет строку команды столько раз, сколько команд
+            ssh.settimeout(0.3)  # Установка задержки ввода команды
+            output = ""  # Без этого не работает)))
+            while True:
+                try:
+                    part = ssh.recv(max_bytes).decode("utf-8")  # Декодируется в UTF-8 для предоставления на вывод
+                    output += part  # Подготовка данных на вывод
+                except socket.timeout:
+                    break
+            results[command] = output  # Объявление переменной для дальнейшей работы
+        return results  # Окончание цикла
+
+
+result = send_show_command()  # Преобразование переменной из функции
+pprint(result, width=120)  # Вывод данных функции
