@@ -1,0 +1,24 @@
+# Данная функция позволяет работать с базами данных на SQL
+# Она может отправлять запросы и получать выводы этих запросов
+# В качестве аргументов передаётся база данных, запрос, адрес хоста, пользователь и его пароль
+
+import mysql.connector  # Библиотека обращения к SQL
+
+
+def sql(database, sqlString, host, user, password):  # Объявляем функцию
+    comment = mysql.connector.connect(  # Объявления класса подключения sql
+        host=host,  # Указываем хост
+        user=user,  # Указываем логин
+        password=password,  # Указываем пароль
+        database=database  # Выбираем базу данных
+    )
+    mycursor = comment.cursor()  # Приводим функцию к переменной
+    mycursor.execute(sqlString)  # Сам запрос sql
+    myresult = str(mycursor.fetchone())  # Перевод в строку
+    return myresult  # Возвращаем результат функции
+
+
+portNumber = '21'  # Объявляем переменную
+request = "SELECT * FROM `ip` WHERE `sw_port` = '" + portNumber + "'"  # Сам запрос в базу данных
+output = str(sql('dhcp', request, 'host', 'user', 'password'))  # Переменная с выводом запроса
+print(output)  # Выводим результат
